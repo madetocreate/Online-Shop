@@ -1,0 +1,190 @@
+@import "tailwindcss";
+
+:root {
+  --background: #FAF7F2;
+  --foreground: #1A1A1A;
+  --cream: #FAF7F2;
+  --warm-white: #F5F0E8;
+  --taupe: #8C7E6A;
+  --gold: #B8944F;
+  --gold-light: #D4B87A;
+  --charcoal: #2C2C2C;
+  --soft-black: #1A1A1A;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-cream: var(--cream);
+  --color-warm-white: var(--warm-white);
+  --color-taupe: var(--taupe);
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-charcoal: var(--charcoal);
+  --color-soft-black: var(--soft-black);
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-playfair);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Smooth scroll via Lenis */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+/* Selection */
+::selection {
+  background: var(--gold-light);
+  color: var(--soft-black);
+}
+
+/* Luxury reveal animation */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes lineExpand {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease forwards;
+}
+
+.animate-line-expand {
+  animation: lineExpand 1.2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  transform-origin: left;
+}
+
+/* Product card hover */
+.product-card {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1),
+              box-shadow 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.product-card:hover {
+  transform: scale(1.015) translateY(-3px);
+  box-shadow: 0 9px 40px rgba(0, 0, 0, 0.06);
+}
+
+.product-card .product-image {
+  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.product-card:hover .product-image {
+  transform: scale(1.05);
+}
+
+.product-card .product-cta {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.product-card:hover .product-cta {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Magnetic button */
+.magnetic-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.magnetic-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.magnetic-btn:hover::before {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.magnetic-btn span {
+  position: relative;
+  z-index: 1;
+}
+
+/* Horizontal scroll line */
+.scroll-line {
+  height: 1px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+/* Nav link underline */
+.nav-link {
+  position: relative;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.nav-link:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
