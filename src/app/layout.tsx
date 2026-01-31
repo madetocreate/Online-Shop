@@ -14,8 +14,28 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "MAISON — Luxury Sunglasses & Handbags",
-  description: "Curated luxury sunglasses and handbags for the modern lifestyle. Timeless elegance, exceptional craftsmanship.",
+  title: {
+    default: "MAISON — Luxury Sunglasses & Handbags",
+    template: "%s | MAISON",
+  },
+  description: "Curated luxury sunglasses and handbags for the modern lifestyle. Timeless elegance, exceptional craftsmanship from Europe's finest manufacturers.",
+  metadataBase: new URL("https://shop.studiomeyer.io"),
+  openGraph: {
+    type: "website",
+    locale: "de_DE",
+    siteName: "MAISON",
+    title: "MAISON — Luxury Sunglasses & Handbags",
+    description: "Handverlesene Luxus-Sonnenbrillen & Handtaschen für den modernen Lebensstil.",
+    images: [{ url: "/images/hero/hero-main.png", width: 1792, height: 1024, alt: "MAISON — Luxury Accessories" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "MAISON — Luxury Sunglasses & Handbags",
+    description: "Handverlesene Luxus-Sonnenbrillen & Handtaschen für den modernen Lebensstil.",
+    images: ["/images/hero/hero-main.png"],
+  },
+  robots: { index: true, follow: true },
+  alternates: { canonical: "https://shop.studiomeyer.io" },
 };
 
 export default function RootLayout({
