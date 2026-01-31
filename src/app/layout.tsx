@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import { Providers } from "./providers";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -13,8 +14,8 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "MAISON — Luxury Lifestyle",
-  description: "Curated luxury goods for the modern connoisseur. Timeless elegance, exceptional craftsmanship.",
+  title: "MAISON — Luxury Sunglasses & Handbags",
+  description: "Curated luxury sunglasses and handbags for the modern lifestyle. Timeless elegance, exceptional craftsmanship.",
 };
 
 export default function RootLayout({
@@ -25,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="de">
       <body className={`${inter.variable} ${playfair.variable} antialiased`}>
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

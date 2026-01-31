@@ -1,81 +1,35 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-
-const products = [
-  {
-    id: 1,
-    name: "Cashmere Mantel",
-    price: "2.490",
-    category: "Outerwear",
-    image: "https://images.unsplash.com/photo-1539533113208-f6df8cc8b543?w=800&q=80",
-  },
-  {
-    id: 2,
-    name: "Seidenschal Ivory",
-    price: "389",
-    category: "Accessoires",
-    image: "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=800&q=80",
-  },
-  {
-    id: 3,
-    name: "Leder Weekender",
-    price: "1.290",
-    category: "Taschen",
-    image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&q=80",
-  },
-  {
-    id: 4,
-    name: "Merino Pullover",
-    price: "490",
-    category: "Strickwaren",
-    image: "https://images.unsplash.com/photo-1434389677669-e08b4cda3a20?w=800&q=80",
-  },
-  {
-    id: 5,
-    name: "Chronograph Rosé",
-    price: "4.890",
-    category: "Uhren",
-    image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=800&q=80",
-  },
-  {
-    id: 6,
-    name: "Parfum Noir",
-    price: "245",
-    category: "Düfte",
-    image: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=800&q=80",
-  },
-];
+import { useLocale } from "@/lib/LocaleContext";
+import { useCart } from "@/lib/CartContext";
+import { products } from "@/lib/products";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function ProductGrid() {
+  const { t, locale } = useLocale();
+  const { addItem } = useCart();
   const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const grid = gridRef.current;
     if (!grid) return;
-
     const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const items = grid.querySelectorAll(".product-card");
-            items.forEach((item, i) => {
-              const el = item as HTMLElement;
-              el.style.opacity = "0";
-              el.style.transform = "translateY(30px)";
-              setTimeout(() => {
-                el.style.transition = "all 0.6s cubic-bezier(0.23, 1, 0.32, 1)";
-                el.style.opacity = "1";
-                el.style.transform = "translateY(0)";
-              }, i * 100);
-            });
-            observer.unobserve(entry.target);
-          }
-        });
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          const cards = grid.querySelectorAll("[data-card]");
+          cards.forEach((card, i) => {
+            setTimeout(() => {
+              (card as HTMLElement).style.opacity = "1";
+              (card as HTMLElement).style.transform = "translateY(0)";
+            }, i * 100);
+          });
+          observer.disconnect();
+        }
       },
       { threshold: 0.1 }
     );
-
     observer.observe(grid);
     return () => observer.disconnect();
   }, []);
@@ -83,55 +37,61 @@ export default function ProductGrid() {
   return (
     <section id="kollektion" className="py-24 md:py-32 bg-cream">
       <div className="mx-auto max-w-[1400px] px-6 md:px-12">
-        {/* Section header */}
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-16">
+        <div className="flex items-end justify-between mb-14">
           <div>
-            <span className="text-[11px] tracking-[0.3em] uppercase text-taupe mb-3 block">
-              Unsere Auswahl
+            <span className="text-[11px] tracking-[0.2em] uppercase text-gold block mb-3">
+              {t("products.filter.all")}
             </span>
-            <h2 className="font-[var(--font-playfair)] text-4xl md:text-5xl text-soft-black">
-              Kollektion
+            <h2 className="font-[var(--font-playfair)] text-3xl md:text-4xl text-soft-black">
+              {t("products.title")}
             </h2>
           </div>
-          <a
-            href="#"
-            className="nav-link text-[13px] tracking-[0.12em] uppercase text-taupe mt-4 md:mt-0"
-          >
-            Alle Produkte ansehen
-          </a>
+          <Link href="/kollektion" className="hidden md:inline-flex text-[13px] tracking-[0.1em] uppercase text-taupe hover:text-gold transition-colors">
+            {t("products.viewAll")} →
+          </Link>
         </div>
 
-        {/* Grid */}
-        <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          {products.map((product) => (
-            <article key={product.id} className="product-card group cursor-pointer bg-warm-white">
-              {/* Image */}
-              <div className="aspect-[3/4] overflow-hidden bg-warm-white">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="product-image w-full h-full object-cover"
-                  loading="lazy"
-                />
-              </div>
-
-              {/* Info */}
-              <div className="p-5">
-                <span className="text-[10px] tracking-[0.2em] uppercase text-taupe">
-                  {product.category}
-                </span>
-                <h3 className="font-[var(--font-playfair)] text-lg text-soft-black mt-1">
-                  {product.name}
-                </h3>
-                <div className="flex items-center justify-between mt-3">
-                  <span className="text-sm text-charcoal">{product.price} &euro;</span>
-                  <button className="product-cta text-[11px] tracking-[0.15em] uppercase text-gold hover:text-soft-black transition-colors">
-                    Ansehen
-                  </button>
+        <div ref={gridRef} className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+          {products.slice(0, 8).map((product) => (
+            <div key={product.id} data-card className="product-card group opacity-0 translate-y-8 transition-all duration-[600ms]">
+              <Link href={`/produkt/${product.slug}`} className="block">
+                <div className="relative aspect-[3/4] bg-warm-white rounded overflow-hidden mb-4">
+                  <Image
+                    src={product.image}
+                    alt={product.name[locale]}
+                    fill
+                    className="product-image object-cover"
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                    loading="lazy"
+                  />
+                  {product.isNew && (
+                    <span className="absolute top-3 left-3 px-2.5 py-1 bg-gold text-white text-[10px] tracking-[0.15em] uppercase">
+                      {t("products.new")}
+                    </span>
+                  )}
+                  <div className="product-cta absolute bottom-3 left-3 right-3">
+                    <button
+                      onClick={(e) => { e.preventDefault(); addItem(product); }}
+                      className="w-full py-2.5 bg-soft-black/90 text-cream text-[11px] tracking-[0.15em] uppercase backdrop-blur-sm hover:bg-gold transition-colors"
+                    >
+                      {t("products.addToCart")}
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </article>
+              </Link>
+              <span className="text-[10px] tracking-[0.15em] uppercase text-taupe">
+                {product.category === "sunglasses" ? t("products.filter.sunglasses") : t("products.filter.bags")}
+              </span>
+              <h3 className="font-[var(--font-playfair)] text-base text-soft-black mt-1">{product.name[locale]}</h3>
+              <p className="text-sm text-taupe mt-0.5">€{product.price.toLocaleString()}</p>
+            </div>
           ))}
+        </div>
+
+        <div className="mt-10 text-center md:hidden">
+          <Link href="/kollektion" className="text-[13px] tracking-[0.1em] uppercase text-taupe hover:text-gold transition-colors">
+            {t("products.viewAll")} →
+          </Link>
         </div>
       </div>
     </section>

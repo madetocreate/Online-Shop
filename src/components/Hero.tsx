@@ -1,93 +1,103 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useLocale } from "@/lib/LocaleContext";
+import Link from "next/link";
+import Image from "next/image";
 
 export default function Hero() {
-  const headingRef = useRef<HTMLHeadingElement>(null);
-  const lineRef = useRef<HTMLDivElement>(null);
+  const { t } = useLocale();
+  const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const heading = headingRef.current;
-    const line = lineRef.current;
-    if (heading) {
-      heading.style.opacity = "0";
-      heading.style.transform = "translateY(40px)";
-      requestAnimationFrame(() => {
-        heading.style.transition = "all 1s cubic-bezier(0.23, 1, 0.32, 1)";
-        heading.style.opacity = "1";
-        heading.style.transform = "translateY(0)";
-      });
-    }
-    if (line) {
-      line.style.transform = "scaleX(0)";
+    const el = sectionRef.current;
+    if (!el) return;
+    const reveals = el.querySelectorAll("[data-reveal]");
+    reveals.forEach((r, i) => {
       setTimeout(() => {
-        line.classList.add("animate-line-expand");
-      }, 600);
-    }
+        (r as HTMLElement).style.opacity = "1";
+        (r as HTMLElement).style.transform = "translateY(0)";
+      }, 200 + i * 150);
+    });
   }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-warm-white">
+    <section ref={sectionRef} className="relative h-screen min-h-[700px] flex items-center overflow-hidden">
       {/* Background image */}
       <div className="absolute inset-0">
-        <img
-          src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&q=80"
-          alt=""
-          className="w-full h-full object-cover opacity-40"
+        <Image
+          src="/images/hero/hero-main.png"
+          alt="Luxury lifestyle"
+          fill
+          className="object-cover"
+          priority
+          sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-warm-white/60 via-warm-white/30 to-warm-white" />
+        <div className="absolute inset-0 bg-gradient-to-r from-soft-black/60 via-soft-black/30 to-transparent" />
       </div>
 
-      <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
-        {/* Subtle top accent */}
-        <div className="flex items-center justify-center gap-4 mb-8 animate-fade-in" style={{ animationDelay: "0.2s" }}>
-          <span className="w-8 h-px bg-gold" />
-          <span className="text-[11px] tracking-[0.3em] uppercase text-taupe">Seit 2024</span>
-          <span className="w-8 h-px bg-gold" />
-        </div>
-
-        <h1
-          ref={headingRef}
-          className="font-[var(--font-playfair)] text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[1.1] text-soft-black mb-6"
-        >
-          Zeitlose
-          <br />
-          <span className="italic text-taupe">Eleganz</span>
-        </h1>
-
-        <p
-          className="text-base md:text-lg text-taupe max-w-lg mx-auto mb-10 animate-fade-up"
-          style={{ animationDelay: "0.4s" }}
-        >
-          Kuratierte Luxusgüter für den modernen Kenner.
-          Handwerkskunst, die Generationen überdauert.
-        </p>
-
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-up" style={{ animationDelay: "0.6s" }}>
-          <a
-            href="#kollektion"
-            className="magnetic-btn bg-soft-black text-cream px-10 py-4 text-[13px] tracking-[0.15em] uppercase hover:text-white transition-colors"
+      {/* Content */}
+      <div className="relative z-10 mx-auto max-w-[1400px] px-6 md:px-12 w-full">
+        <div className="max-w-2xl">
+          {/* Badge */}
+          <div
+            data-reveal
+            className="inline-flex items-center gap-3 mb-6 opacity-0 translate-y-6 transition-all duration-700"
           >
-            <span>Kollektion entdecken</span>
-          </a>
-          <a
-            href="#neuheiten"
-            className="magnetic-btn border border-taupe/30 text-charcoal px-10 py-4 text-[13px] tracking-[0.15em] uppercase hover:border-gold hover:text-soft-black transition-colors"
-          >
-            <span>Neuheiten</span>
-          </a>
-        </div>
+            <span className="w-8 h-px bg-gold-light" />
+            <span className="text-[11px] tracking-[0.2em] uppercase text-gold-light">
+              {t("hero.badge")}
+            </span>
+            <span className="w-8 h-px bg-gold-light" />
+          </div>
 
-        {/* Gold line */}
-        <div ref={lineRef} className="scroll-line w-24 mx-auto mt-16" />
+          {/* Heading */}
+          <h1
+            data-reveal
+            className="font-[var(--font-playfair)] text-5xl md:text-7xl lg:text-8xl text-white leading-[1.05] mb-6 opacity-0 translate-y-6 transition-all duration-1000"
+          >
+            {t("hero.title")}{" "}
+            <em className="text-gold-light not-italic">{t("hero.titleAccent")}</em>
+          </h1>
+
+          {/* Gold line */}
+          <div
+            data-reveal
+            className="w-16 h-px bg-gold mb-6 opacity-0 translate-y-6 transition-all duration-700"
+          />
+
+          {/* Subtitle */}
+          <p
+            data-reveal
+            className="text-base md:text-lg text-white/70 leading-relaxed max-w-lg mb-10 opacity-0 translate-y-6 transition-all duration-700"
+          >
+            {t("hero.subtitle")}
+          </p>
+
+          {/* CTAs */}
+          <div
+            data-reveal
+            className="flex flex-col sm:flex-row gap-4 opacity-0 translate-y-6 transition-all duration-700"
+          >
+            <Link
+              href="/kollektion"
+              className="magnetic-btn px-8 py-3.5 bg-white text-soft-black text-sm tracking-[0.15em] uppercase hover:bg-gold hover:text-white transition-colors duration-300"
+            >
+              <span>{t("hero.cta")}</span>
+            </Link>
+            <Link
+              href="/kollektion?filter=new"
+              className="px-8 py-3.5 border border-white/30 text-white text-sm tracking-[0.15em] uppercase hover:border-gold hover:text-gold transition-all duration-300"
+            >
+              {t("hero.ctaSecondary")}
+            </Link>
+          </div>
+        </div>
       </div>
 
       {/* Scroll indicator */}
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-fade-in" style={{ animationDelay: "1.2s" }}>
-        <span className="text-[10px] tracking-[0.2em] uppercase text-taupe">Scroll</span>
-        <div className="w-px h-8 bg-taupe/30 relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-full bg-gold animate-pulse" />
-        </div>
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-fade-in" style={{ animationDelay: "1.5s" }}>
+        <span className="w-px h-10 bg-gradient-to-b from-transparent to-gold-light" />
       </div>
     </section>
   );

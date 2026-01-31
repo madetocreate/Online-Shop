@@ -1,56 +1,38 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-
-const categories = [
-  {
-    name: "Damen",
-    image: "https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?w=800&q=80",
-    count: 128,
-  },
-  {
-    name: "Herren",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80",
-    count: 96,
-  },
-  {
-    name: "Accessoires",
-    image: "https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?w=800&q=80",
-    count: 64,
-  },
-  {
-    name: "Maison",
-    image: "https://images.unsplash.com/photo-1616046229478-9901c5536a45?w=800&q=80",
-    count: 42,
-  },
-];
+import { useLocale } from "@/lib/LocaleContext";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function Categories() {
+  const { t } = useLocale();
   const gridRef = useRef<HTMLDivElement>(null);
+
+  const categories = [
+    { key: "sunglasses" as const, image: "/images/categories/cat-sunglasses.png", count: 24, href: "/kollektion?filter=sunglasses" },
+    { key: "bags" as const, image: "/images/categories/cat-bags.png", count: 18, href: "/kollektion?filter=bags" },
+    { key: "new" as const, image: "/images/categories/cat-new.png", count: 12, href: "/kollektion?filter=new" },
+    { key: "lifestyle" as const, image: "/images/categories/cat-lifestyle.png", count: 8, href: "/kollektion" },
+  ];
 
   useEffect(() => {
     const grid = gridRef.current;
     if (!grid) return;
-
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          grid.querySelectorAll(".category-card").forEach((el, i) => {
-            const htmlEl = el as HTMLElement;
-            htmlEl.style.opacity = "0";
-            htmlEl.style.transform = "translateY(20px)";
+          grid.querySelectorAll("[data-card]").forEach((card, i) => {
             setTimeout(() => {
-              htmlEl.style.transition = "all 0.7s cubic-bezier(0.23, 1, 0.32, 1)";
-              htmlEl.style.opacity = "1";
-              htmlEl.style.transform = "translateY(0)";
+              (card as HTMLElement).style.opacity = "1";
+              (card as HTMLElement).style.transform = "translateY(0)";
             }, i * 120);
           });
-          observer.unobserve(grid);
+          observer.disconnect();
         }
       },
       { threshold: 0.1 }
     );
-
     observer.observe(grid);
     return () => observer.disconnect();
   }, []);
@@ -58,39 +40,36 @@ export default function Categories() {
   return (
     <section className="py-24 md:py-32 bg-warm-white">
       <div className="mx-auto max-w-[1400px] px-6 md:px-12">
-        <div className="text-center mb-16">
-          <span className="text-[11px] tracking-[0.3em] uppercase text-taupe mb-3 block">
-            Entdecken
-          </span>
-          <h2 className="font-[var(--font-playfair)] text-4xl md:text-5xl text-soft-black">
-            Kategorien
-          </h2>
-        </div>
-
-        <div ref={gridRef} className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <h2 className="font-[var(--font-playfair)] text-3xl md:text-4xl text-soft-black mb-14 text-center">
+          {t("categories.title")}
+        </h2>
+        <div ref={gridRef} className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
           {categories.map((cat) => (
-            <a
-              key={cat.name}
-              href="#"
-              className="category-card group relative aspect-[3/4] overflow-hidden cursor-pointer"
+            <Link
+              key={cat.key}
+              href={cat.href}
+              data-card
+              className="group relative aspect-[3/4] rounded overflow-hidden opacity-0 translate-y-8 transition-all duration-700"
             >
-              <img
+              <Image
                 src={cat.image}
-                alt={cat.name}
-                className="w-full h-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-105"
+                alt={t(`categories.${cat.key}`)}
+                fill
+                className="object-cover transition-transform duration-700 group-hover:scale-105"
+                sizes="(max-width: 768px) 50vw, 25vw"
                 loading="lazy"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-6">
-                <h3 className="font-[var(--font-playfair)] text-2xl text-white mb-1">
-                  {cat.name}
+              <div className="absolute inset-0 bg-gradient-to-t from-soft-black/70 via-soft-black/20 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-5">
+                <h3 className="font-[var(--font-playfair)] text-lg text-white mb-1">
+                  {t(`categories.${cat.key}`)}
                 </h3>
-                <span className="text-[11px] tracking-[0.15em] uppercase text-white/60">
-                  {cat.count} Artikel
-                </span>
-                <div className="mt-3 w-8 h-px bg-gold transform origin-left scale-x-0 transition-transform duration-500 group-hover:scale-x-100" />
+                <p className="text-[11px] text-white/50 tracking-wider uppercase">
+                  {cat.count} {t("categories.items")}
+                </p>
+                <div className="w-8 h-px bg-gold mt-3 transition-transform duration-500 origin-left group-hover:scale-x-[3]" />
               </div>
-            </a>
+            </Link>
           ))}
         </div>
       </div>
